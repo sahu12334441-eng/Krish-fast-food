@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aditya Gupta | Interactive 3D Paint Portfolio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght=400;600;700;900&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0b0c10;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 3D Canvas Background Paintings */
+        .paint-canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .neon-cube {
+            position: absolute;
+            top: 10%;
+            left: 5%;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #00f2fe, #4facfe);
+            border-radius: 10px;
+            transform: rotateX(35deg) rotateY(45deg);
+            box-shadow: 0 0 50px rgba(0, 242, 254, 0.6);
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.8;
+        }
+
+        .neon-cone {
+            position: absolute;
+            bottom: 15%;
+            right: 8%;
+            width: 130px;
+            height: 130px;
+            background: linear-gradient(135deg, #ff007f, #7f00ff);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 0, 127, 0.6);
+            animation: floatAlt 7s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(35deg) rotateY(45deg); }
+            50% { transform: translateY(-25px) rotateX(45deg) rotateY(35deg); }
+        }
+
+        @keyframes floatAlt {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(20px) scale(1.08); }
+        }
+
+        .wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 950px;
+            margin: 50px auto;
+            padding: 25px;
+        }
+
+        /* 🌟 HERO SECTION: WITH MOUSE HOVER COLOR CHANGE & GLOW */
+        .hero-section {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 70px 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            margin-bottom: 40px;
+            transition: all 0.5s ease; /* Smooth effect */
+            cursor: pointer;
+        }
+
+        /* Mouse aane par border aur background ka rang badlega */
+        .hero-section:hover {
+            border-color: #ff9900;
+            background: rgba(255, 153, 0, 0.05);
+            box-shadow: 0 25px 60px rgba(255, 153, 0, 0.25);
+            transform: scale(1.01);
+        }
+
+        .hero-section h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00f2fe, #ff007f, #ff9900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+
+        .hero-section p {
+            font-size: 1.3rem;
+            color: #a0a0c0;
+            transition: color 0.3s ease;
+        }
+
+        .hero-section:hover p {
+            color: #ffffff; /* Text power highlight */
+        }
+
+        /* Motivational Bar with Hover Glow */
+        .motivation-bar {
+            background: linear-gradient(90deg, rgba(0, 242, 254, 0.15), rgba(255, 0, 127, 0.15));
+            border-left: 6px solid #00f2fe;
+            border-right: 6px solid #ff007f;
+            padding: 25px;
+            font-style: italic;
+            font-size: 1.3rem;
+            text-align: center;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            font-weight: 600;
+            transition: all 0.4s ease;
+        }
+
+        .motivation-bar:hover {
+            background: linear-gradient(90deg, rgba(0, 242, 254, 0.25), rgba(255, 0, 127, 0.25));
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.2);
+            color: #00f2fe;
+        }
+
+        /* CARDS GRID */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .card-3d {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .card-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #00f2fe, #ff007f);
+            border-radius: 24px 24px 0 0;
+        }
+
+        /* 🌟 CARDS HOVER: ALAG-ALAG COLORS AUR NEON GLOW */
+        /* Pehla Card (Science) - Mouse aane par Cyan Blue Glow */
+        .card-3d:nth-child(1):hover {
+            transform: translateY(-12px);
+            border-color: #00f2fe;
+            background: rgba(0, 242, 243, 0.03);
+            box-shadow: 0 25px 50px rgba(0, 242, 254, 0.3);
+        }
+
+        /* Doosra Card (Goals) - Mouse aane par Pink/Purple Glow */
+        .card-3d:nth-child(2):hover {
+            transform: translateY(-12px);
+            border-color: #ff007f;
+            background: rgba(255, 0, 127, 0.03);
+            box-shadow: 0 25px 50px rgba(255, 0, 127, 0.3);
+        }
+
+        /* Teesra Card (Journey) - Mouse aane par Multi-Color Glow */
+        .card-3d.full-width:hover {
+            transform: translateY(-12px);
+            border-color: #ff9900;
+            background: rgba(255, 153, 0, 0.03);
+            box-shadow: 0 25px 50px rgba(255, 153, 0, 0.3);
+        }
+
+        .card-3d h2 {
+            font-size: 1.7rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            transition: color 0.3s ease;
+        }
+
+        .card-3d ul {
+            list-style: none;
+        }
+
+        .card-3d ul li {
+            margin-bottom: 15px;
+            padding-left: 25px;
+            position: relative;
+            color: #d1d1e0;
+        }
+
+        .card-3d ul li::before {
+            content: "✦";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #ff9900;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* SIGNATURE FOOTER */
+        .signature-footer {
+            margin-top: 70px;
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .badge-3d {
+            display: inline-block;
+            background: linear-gradient(135deg, #1f4068, #162447);
+            border: 2px solid #00f2fe;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #ffffff;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .badge-3d:hover {
+            box-shadow: 0 0 35px rgba(255, 0, 127, 0.6);
+            border-color: #ff007f;
+            transform: scale(1.05);
+        }
+
+        .copyright {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #505070;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Background Paintings -->
+    <div class="paint-canvas">
+        <div class="neon-cube"></div>
+        <div class="neon-cone"></div>
+    </div>
+
+    <div class="wrapper">
+        <!-- Main Intro Frame (Hover to Glow) -->
+        <div class="hero-section">
+            <h1>Aditya Gupta</h1>
+            <p>Science & Mathematics Student | Creative 3D Mind</p>
+        </div>
+
+        <div class="motivation-bar">
+            "Strength, Mental Power, aur Abundance ka safar thode struggle se shuru hota hai, par rukta nahi."
+        </div>
+
+        <!-- Cards Layout -->
+        <div class="cards-grid">
+            <div class="card-3d">
+                <h2>Background (Science & Maths)</h2>
+                <ul>
+                    <li><strong>Geometrical Logic:</strong> Maths mere liye sirf formulas nahi, balki har solution ko 3D geometric art me dekhna hai.</li>
+                    <li><strong>Equation Specialist:</strong> Science ne sikhaya hai ki har mushkil ka ek fixed aur strong formula hota hai.</li>
+                </ul>
+            </div>
+
+            <div class="card-3d">
+                <h2>Ultimate Identity & Aim</h2>
+                <ul>
+                    <li><strong>Power & Strength:</strong> Mental power me itna majboot banna jise koi hila na sake.</li>
+                    <li><strong>Financial Peak:</strong> Apne hardcore struggle ke dum par life me itna rich banna ki paise ki kabhi kami na ho.</li>
+                </ul>
+            </div>
+
+            <div class="card-3d full-width">
+                <h2>The Canvas of My Journey & Struggle</h2>
+                <p>Ek student life me challenges aana aam baat hai. Par jab aapka vision bada ho toh har ek problem ek lesson ban jaati hai. Main apne aaj ke struggle ko kal ki apni sabse badi takat (strength) me badal raha hoon. Yeh website usi unshakeable mindset ka ek 3D digital canvas hai.</p>
+            </div>
+        </div>
+
+        <!-- FOOTER: SIGNATURE BADGE -->
+        <div class="signature-footer">
+            <div class="badge-3d">
+                🚀 Website Made by Aditya
+            </div>
+            <div class="copyright">
+                Aditya Gupta © 2026 | Developed by Me
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
